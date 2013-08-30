@@ -1,6 +1,7 @@
 #Use top_keywords function to get top n most relevant keywords from a
 #single document
 #Based on a paper by Yutaka Matsuo, Mitsuru Ishizuka
+#Modified to get unigrams AND bigrams
 
 from gensim.parsing import PorterStemmer
 
