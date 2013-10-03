@@ -5,13 +5,13 @@ import numpy
 from sklearn import svm
 import random
 
-def one_class_classifier(data, kernel="rbf"):
+def one_class_classifier(data, kernel="poly", degree=2):
     """
     Returns a SVDD (Support Vector Data Description) model
     based on input dataset
     """
     nu = 1/ float(len(data))
-    classifier = svm.OneClassSVM(nu=nu, kernel=kernel, gamma=0.0)
+    classifier = svm.OneClassSVM(nu=nu, kernel=kernel, gamma=0.0, degree=degree)
     classifier.fit(data)
     return classifier
 
@@ -36,12 +36,12 @@ def check_same_cluster(classifier, vector1, vector2, n=40):
         return 1
 
 
-def generate_clusters(data):
+def generate_clusters(data, kernel='poly', degree=2):
     """
     Generate clusters based on given data and method of
     Support Vector Clustering
     """
-    classifier = one_class_classifier(data)
+    classifier = one_class_classifier(data, kernel, degree)
     lookup = {}
     points = {}
     clusters = {}
