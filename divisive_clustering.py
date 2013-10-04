@@ -17,18 +17,31 @@ def generate_clusters(data, iterations=40):
     return clusters
 
 
-def divisive_clustering(vectors, to_cluster, n=2, iterations=40, initial_quality=0):
+def divisive_clustering(vectors, to_cluster, sensitivity=1, n=2,
+                        iterations=40, initial_quality=0):
     """
     Performs divisive clustering using K-Means algorithm.
-    Uses cluster qualities as an indicator to stop
+    Uses cluster qualities as a stopping criterion.
+
+    'vectors' is a list of Numpy arrays
+
+    'to_cluster' is a list of the vector numbers from the 'vectors'
+    list that need to be clustered
+
+    'sensitivity' is a value from 0 to 1. The lower this value,
+    the greater is the relaxation of the stopping criterion, and
+    hence greater is the tendency to keep splitting
 
     'n' is the number of clusters to be formed at each level
     using flat clustering(K-Means)
+
+    'iterations' is the fixed number of iterations to perform
+    for K-Means E-M
     """
 
     if len(to_cluster) == 1:
         return [to_cluster]
-    clusters, centroids = kmeansclustering(vectors, to_cluster, 2, iterations)
+    clusters, centroids = kmeansclustering(vectors, to_cluster, n, iterations)
     to_del = []
     for x in clusters:
         if len(clusters[x]) == 0:
@@ -40,8 +53,7 @@ def divisive_clustering(vectors, to_cluster, n=2, iterations=40, initial_quality
     new_quality = 0
     for x in clusters:
         new_quality += qualities[x] * float(len(clusters[x])) / float(len(to_cluster))
-    if new_quality <= (initial_quality * 0.7):
-        print "Original cluster is of size " + `len(to_cluster)`+ " of quality " + `initial_quality`+ ", new quality is " + `new_quality`
+    if new_quality <= (initial_quality * sensitivity):
         return [to_cluster]
     main = [clusters[x] for x in clusters]
     if len(main) == 1:
@@ -49,7 +61,7 @@ def divisive_clustering(vectors, to_cluster, n=2, iterations=40, initial_quality
     total = []
     for i, cluster in enumerate(main):
         total.extend(divisive_clustering(vectors, cluster, \
-                                         n, iterations, qualities[i]))
+                                         sensitivity, n, iterations, qualities[i]))
     return total
 
 
